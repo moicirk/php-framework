@@ -11,6 +11,8 @@ use League\Route\Router;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
+define('APP_ROOT', dirname(__DIR__));
+
 $request = ServerRequest::fromGlobals();
 
 $router = new Router();

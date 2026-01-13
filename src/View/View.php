@@ -55,6 +55,6 @@ class View
 
     private static function getViewPath(): string
     {
-        return dirname(__DIR__) . "/../views";
+        return APP_ROOT . "/views";
     }
 }

@@ -1,12 +1,23 @@
 <?php
+
+use App\Entities\Product;
 use PhpFramework\View\View;
+
+/**
+ * @var Product[] $products
+ */
 
 View::extends('application');
 ?>
 
 <h3>I am a list of products</h3>
 <ul>
-    <li>Product number <a href="/product/1">#1</a></li>
-    <li>Product number <a href="/product/2">#2</a></li>
-    <li>Product number <a href="/product/123">#123</a></li>
+    <?php foreach ($products as $product) : ?>
+        <li>
+            <p>
+                <?= $product->name;?>: <a href="/product/<?= $product->id;?>">#<?= $product->id;?></a>
+            </p>
+            <p><?= $product->description;?></p>
+        </li>
+    <?php endforeach;?>
 </ul>

@@ -10,7 +10,7 @@ class HomeController extends AbstractController
     public function index(): ResponseInterface
     {
         return $this->render('home/index', [
-            'name' => 'Igor Zzzz'
+            'name' => 'Igor Mur'
         ]);
     }
 }

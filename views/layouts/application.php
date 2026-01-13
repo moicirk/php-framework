@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var string $content
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +10,7 @@
     <title>This my title</title>
 </head>
 <body>
-    <h1>LALalaalalala</h1>
+    <h1>This is layout</h1>
 
     <?= $content;?>
 </body>
