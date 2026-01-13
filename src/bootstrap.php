@@ -8,18 +8,27 @@ use App\Controllers\ProductsController;
 use GuzzleHttp\Psr7\ServerRequest;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Router;
+use League\Route\Strategy\ApplicationStrategy;
+use PhpFramework\Database\Database;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 define('APP_ROOT', dirname(__DIR__));
 
-$request = ServerRequest::fromGlobals();
+$container = new DI\Container([
+    Database::class => DI\create(Database::class)
+]);
+$strategy = new ApplicationStrategy();
+$strategy->setContainer($container);
 
-$router = new Router();
+$router = new Router;
+$router->setStrategy($strategy);
+
 $router->get('/', [HomeController::class, 'index']);
 $router->get('/products', [ProductsController::class, 'index']);
 $router->get('/product/{id:number}', [ProductsController::class, 'show']);
 
+$request = ServerRequest::fromGlobals();
 $response = $router->dispatch($request);
 
 new SapiEmitter()->emit($response);
