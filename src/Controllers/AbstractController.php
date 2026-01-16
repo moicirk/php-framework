@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpFramework\Controller;
+namespace PhpFramework\Controllers;
 
-use PhpFramework\View\View;
+use PhpFramework\Views\View;
 use Psr\Http\Message\ResponseInterface;
 
 class AbstractController

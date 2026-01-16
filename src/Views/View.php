@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpFramework\View;
+namespace PhpFramework\Views;
 
 use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;

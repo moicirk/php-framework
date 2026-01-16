@@ -1,13 +1,13 @@
 <?php
 
-namespace PhpFramework\Database;
+namespace PhpFramework\Databases;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\ORMSetup;
 
-class Database
+class Database implements DatabaseInterface
 {
     private EntityManager $entityManager;
 
@@ -18,7 +18,7 @@ class Database
             isDevMode: true
         );
         $config->enableNativeLazyObjects(true);
-        $dbConfig = require_once APP_ROOT . '/config/database.php';
+        $dbConfig = require APP_ROOT . '/config/database.php';
 
         $connection = DriverManager::getConnection($dbConfig, $config);
         $this->entityManager = new EntityManager($connection, $config);

@@ -5,19 +5,22 @@ ini_set('display_errors', 1);
 
 use App\Controllers\HomeController;
 use App\Controllers\ProductsController;
+use PhpFramework\Databases\Database;
+use PhpFramework\Databases\DatabaseInterface;
+use PhpFramework\DI\Container;
 use GuzzleHttp\Psr7\ServerRequest;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
-use PhpFramework\Database\Database;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 define('APP_ROOT', dirname(__DIR__));
 
-$container = new DI\Container([
-    Database::class => DI\create(Database::class)
+$container = new Container([
+    DatabaseInterface::class => Database::class
 ]);
+
 $strategy = new ApplicationStrategy();
 $strategy->setContainer($container);
 
