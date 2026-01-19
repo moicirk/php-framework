@@ -2,7 +2,7 @@
 
 namespace PhpFramework\Controllers;
 
-use PhpFramework\Views\View;
+use PhpFramework\View\View;
 use Psr\Http\Message\ResponseInterface;
 
 class AbstractController

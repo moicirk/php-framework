@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpFramework\Databases;
+namespace PhpFramework\Database;
 
 use Doctrine\ORM\EntityRepository;
 

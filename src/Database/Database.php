@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpFramework\Databases;
+namespace PhpFramework\Database;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
@@ -27,5 +27,10 @@ class Database implements DatabaseInterface
     public function getRepository(string $className): EntityRepository
     {
         return $this->entityManager->getRepository($className);
+    }
+
+    public function getEntityManager(): EntityManager
+    {
+        return $this->entityManager;
     }
 }

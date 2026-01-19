@@ -5,8 +5,8 @@ ini_set('display_errors', 1);
 
 use App\Controllers\HomeController;
 use App\Controllers\ProductsController;
-use PhpFramework\Databases\Database;
-use PhpFramework\Databases\DatabaseInterface;
+use PhpFramework\Database\Database;
+use PhpFramework\Database\DatabaseInterface;
 use PhpFramework\DI\Container;
 use GuzzleHttp\Psr7\ServerRequest;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
