@@ -6,6 +6,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\ORMSetup;
+use PhpFramework\Application;
 
 class Database implements DatabaseInterface
 {
@@ -13,12 +14,13 @@ class Database implements DatabaseInterface
 
     public function __construct()
     {
+        $app = Application::instance();
         $config = ORMSetup::createAttributeMetadataConfig(
-            paths: [APP_ROOT . '/application/Entities'],
+            paths: [$app->getBasePath() . '/application/Entities'],
             isDevMode: true
         );
         $config->enableNativeLazyObjects(true);
-        $dbConfig = require APP_ROOT . '/config/database.php';
+        $dbConfig = require $app->getBasePath() . '/config/database.php';
 
         $connection = DriverManager::getConnection($dbConfig, $config);
         $this->entityManager = new EntityManager($connection, $config);

@@ -10,10 +10,7 @@ class Container implements ContainerInterface
 {
     public function __construct(
         private array $bindings = []
-    )
-    {
-        $this->bindDirectory(APP_ROOT . '/application/Controllers', 'App\Controllers');
-    }
+    ) {}
 
     public function get(string $id)
     {
@@ -43,38 +40,6 @@ class Container implements ContainerInterface
     public function set(string $id, string $value): void
     {
         $this->bindings[$id] = $value;
-    }
-
-    /**
-     * Add folder with all classes to binding
-     *
-     * @param string $directory
-     * @param string $namespace
-     * @return void
-     * @throws ContainerException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \ReflectionException
-     */
-    public function bindDirectory(string $directory, string $namespace): void
-    {
-        $files = glob($directory . '/*.php');
-
-        foreach ($files as $file) {
-            $content = file_get_contents($file);
-            $className = null;
-
-            if (preg_match('/class\s+(\w+)/i', $content, $matches)) {
-                $className = $namespace . '\\' . $matches[1];
-            }
-
-            if (!$className || !class_exists($className)) {
-                continue;
-            }
-
-            $this->bindings[$className] = $className;
-            $this->resolve($className);
-        }
     }
 
     /**

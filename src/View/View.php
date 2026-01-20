@@ -3,6 +3,7 @@
 namespace PhpFramework\View;
 
 use Laminas\Diactoros\Response\HtmlResponse;
+use PhpFramework\Application;
 use Psr\Http\Message\ResponseInterface;
 
 class View
@@ -55,6 +56,6 @@ class View
 
     private static function getViewPath(): string
     {
-        return APP_ROOT . "/views";
+        return Application::instance()->getBasePath() . "/views";
     }
 }
