@@ -1,0 +1,11 @@
+#!/usr/bin/php
+<?php
+
+use PhpFramework\Application;
+use PhpFramework\Console\ArgsInputs;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+Application::instance()
+    ->setBasePath(__DIR__)
+    ->handleCommand(new ArgsInputs);
