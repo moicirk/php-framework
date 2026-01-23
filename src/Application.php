@@ -27,7 +27,9 @@ class Application implements ConsoleInterface
 
     public array $commands = [
         \PhpFramework\Console\Commands\ListCommand::class,
-        \PhpFramework\Console\Commands\TestsCommand::class
+        \PhpFramework\Console\Commands\TestsCommand::class,
+        \PhpFramework\Console\Commands\Migration\MigrationCreateCommand::class,
+        \PhpFramework\Console\Commands\Migration\MigrationUpdateCommand::class
     ] {
         get {
             return $this->commands;
