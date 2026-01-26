@@ -3,3 +3,4 @@
 /vendor
 /views/*
 !views/.gitkeep
+.phpunit.result.cache

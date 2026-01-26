@@ -28,6 +28,7 @@ class Application implements ConsoleInterface
     public array $commands = [
         \PhpFramework\Console\Commands\ListCommand::class,
         \PhpFramework\Console\Commands\TestsCommand::class,
+        \PhpFramework\Console\Commands\QueueCommand::class,
         \PhpFramework\Console\Commands\Migration\MigrationCreateCommand::class,
         \PhpFramework\Console\Commands\Migration\MigrationUpdateCommand::class
     ] {
@@ -127,25 +128,21 @@ class Application implements ConsoleInterface
      */
     public function handleCommand(ArgsInputs $argsInputs): void
     {
-        try {
-            $inputs = $argsInputs->parse();
-            $parsedCommand = null;
-            foreach ($this->commands as $commandClass) {
-                /** @var Command $command */
-                $command = new \ReflectionClass($commandClass)->newInstance();
-                if ($command->name === $inputs[0]) {
-                    $parsedCommand = $command;
-                }
+        $inputs = $argsInputs->parse();
+        $parsedCommand = null;
+        foreach ($this->commands as $commandClass) {
+            /** @var Command $command */
+            $command = new \ReflectionClass($commandClass)->newInstance();
+            if ($command->name === $inputs[0]) {
+                $parsedCommand = $command;
             }
-
-            if (!$parsedCommand) {
-                throw new ConsoleException("There is no command with name '{$inputs[0]}' found");
-            }
-
-            $parsedCommand->run(array_splice($inputs, 1));
-        } catch (\Throwable $e) {
-            echo "An exception occurred: " . $e->getMessage() . PHP_EOL;
         }
+
+        if (!$parsedCommand) {
+            throw new ConsoleException("There is no command with name '{$inputs[0]}' found");
+        }
+
+        $parsedCommand->run(array_splice($inputs, 1));
     }
 
     /**
