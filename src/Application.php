@@ -128,21 +128,25 @@ class Application implements ConsoleInterface
      */
     public function handleCommand(ArgsInputs $argsInputs): void
     {
-        $inputs = $argsInputs->parse();
-        $parsedCommand = null;
-        foreach ($this->commands as $commandClass) {
-            /** @var Command $command */
-            $command = new \ReflectionClass($commandClass)->newInstance();
-            if ($command->name === $inputs[0]) {
-                $parsedCommand = $command;
+        try {
+            $inputs = $argsInputs->parse();
+            $parsedCommand = null;
+            foreach ($this->commands as $commandClass) {
+                /** @var Command $command */
+                $command = new \ReflectionClass($commandClass)->newInstance();
+                if ($command->name === $inputs[0]) {
+                    $parsedCommand = $command;
+                }
             }
-        }
 
-        if (!$parsedCommand) {
-            throw new ConsoleException("There is no command with name '{$inputs[0]}' found");
-        }
+            if (!$parsedCommand) {
+                throw new ConsoleException("There is no command with name '{$inputs[0]}' found");
+            }
 
-        $parsedCommand->run(array_splice($inputs, 1));
+            $parsedCommand->run(array_splice($inputs, 1));
+        } catch (\Throwable $e) {
+            echo "An error: " . $e->getMessage() . PHP_EOL;
+        }
     }
 
     /**

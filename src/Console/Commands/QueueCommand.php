@@ -2,12 +2,9 @@
 
 namespace PhpFramework\Console\Commands;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
-use Doctrine\DBAL\Schema\Table;
 use PhpFramework\Console\Command;
-use PhpFramework\Database\Database;
 use PhpFramework\Queues\AbstractTask;
+use PhpFramework\Queues\Queue;
 
 class QueueCommand extends Command
 {
@@ -15,17 +12,20 @@ class QueueCommand extends Command
 
     public string $description = 'Run queue command';
 
-    protected Connection $db;
+    private Queue $queue;
 
     public function __construct()
     {
-        $this->db = new Database()->getConnection();
+        $this->queue = new Queue();
     }
 
     protected function handle(): void
     {
         $this->info('This command will check the queues and run the tasks');
-        $this->createQueuesTable();
+
+        if (!$this->queue->hasQueueTable()) {
+            $this->queue->createQueuesTable();
+        }
 
         while (true) {
             $this->findAndExecuteTask();
@@ -36,39 +36,28 @@ class QueueCommand extends Command
 
     private function findAndExecuteTask(): void
     {
-        $dql = "SELECT * FROM queues WHERE status = 'init' ORDER BY id LIMIT 1";
-        $taskConfig = $this->db->executeQuery($dql)->fetchAssociative();
-
-        if ($taskConfig === false) {
+        $task = $this->queue->pop();
+        if ($task === null) {
             $this->info('Nothing in a queues yet. Waiting for next iteration...');
             return;
         }
 
-        $task = $this->parseTaskConfig($taskConfig);
         if ($this->handleTask($task)) {
-            $this->db->executeQuery("UPDATE queues SET status = 'done' WHERE id = ?", [
-                $taskConfig['id']
-            ]);
+            $this->queue->deleteTask($task);
         }
 
         $this->cleanUp();
     }
 
-    private function parseTaskConfig(array $taskConfig): AbstractTask
-    {
-        $jsonName = json_decode($taskConfig['name']);
-        $className = $jsonName->name;
-        $arguments = $jsonName->arguments;
-
-        return new $className(...$arguments);
-    }
-
     private function handleTask(AbstractTask $task): bool
     {
         try {
-            $this->info("Running task");
+            $className = get_class($task);
+            $this->info("Starting task {$className}");
             $task->handle();
+            $this->info("Finishing task {$className}");
         } catch (\Exception $e) {
+            $this->info("Error occurred when run task {$className}");
             $this->error($e->getMessage());
             return false;
         }
@@ -79,34 +68,5 @@ class QueueCommand extends Command
     private function cleanUp(): void
     {
         gc_collect_cycles();
-    }
-
-    /**
-     * @return void
-     * @throws
-     */
-    private function createQueuesTable(): void
-    {
-        $tableName = 'queues';
-        $schemaManager = $this->db->createSchemaManager();
-        if (!$schemaManager->tablesExist([$tableName])) {
-            $table = new Table($tableName);
-            $table->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
-            $table->addColumn('name', 'json', ['notnull' => true]);
-            $table->addColumn('retries', 'integer', ['default' => 0]);
-            $table->addColumn('result', 'json', ['default' => '{}', 'notnull' => true]);
-            $table->addColumn('status', 'string', ['default' => 'init', 'notnull' => true]);
-
-            $table->addPrimaryKeyConstraint(
-                PrimaryKeyConstraint::editor()
-                    ->setUnquotedName("{$tableName}_pk")
-                    ->setUnquotedColumnNames('id')
-                    ->create()
-            );
-
-            $table->addIndex(['status']);
-
-            $schemaManager->createTable($table);
-        }
     }
 }
