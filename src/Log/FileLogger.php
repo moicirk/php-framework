@@ -29,8 +29,5 @@ class FileLogger extends Logger
 
             fclose($handle);
         }
-
-        var_dump($formatted);
-        exit;
     }
 }

@@ -17,3 +17,5 @@
 * migration:create - Create a migration class
 * migration:update - Create a migration class
  
+[2026-01-28 13:29:53] [info] HomeController::index starts to work {"test":true}
+[2026-01-28 13:30:22] [info] HomeController::index starts to work {"test":true}
