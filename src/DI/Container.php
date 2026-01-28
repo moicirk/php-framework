@@ -2,6 +2,7 @@
 
 namespace PhpFramework\DI;
 
+use Closure;
 use PhpFramework\Exceptions\Container\ContainerException;
 use PhpFramework\Exceptions\Container\NotFoundException;
 use Psr\Container\ContainerInterface;
@@ -16,6 +17,9 @@ class Container implements ContainerInterface
     {
         if ($this->has($id)) {
             $entry = $this->bindings[$id];
+            if ($entry instanceof Closure) {
+                return $entry($this);
+            }
             $id = $entry;
         }
 
@@ -34,10 +38,10 @@ class Container implements ContainerInterface
      * Add the $id and $value to bindings
      *
      * @param string $id
-     * @param string $value
+     * @param string|Closure $value
      * @return void
      */
-    public function set(string $id, string $value): void
+    public function set(string $id, string|Closure $value): void
     {
         $this->bindings[$id] = $value;
     }

@@ -19,6 +19,6 @@ class ListCommand extends Command
             $message .= "* {$command->name} - {$command->description}\n";
         }
 
-        $this->info($message);
+        $this->logger->info($message);
     }
 }

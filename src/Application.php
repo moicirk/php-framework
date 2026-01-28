@@ -8,46 +8,54 @@ use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 use PhpFramework\Console\ArgsInputs;
 use PhpFramework\Console\Command;
+use PhpFramework\Console\Commands\ListCommand;
+use PhpFramework\Console\Commands\Migration\MigrationCreateCommand;
+use PhpFramework\Console\Commands\Migration\MigrationUpdateCommand;
+use PhpFramework\Console\Commands\QueueCommand;
+use PhpFramework\Console\Commands\TestsCommand;
 use PhpFramework\Console\ConsoleException;
 use PhpFramework\Console\ConsoleInterface;
 use PhpFramework\Database\Database;
 use PhpFramework\Database\DatabaseInterface;
 use PhpFramework\DI\Container;
+use PhpFramework\Log\ConsoleLogger;
+use PhpFramework\Log\FileLogger;
+use PhpFramework\Log\LoggerManager;
+use Psr\Log\LoggerInterface;
 
 class Application implements ConsoleInterface
 {
     public static Application|null $app = null;
 
+    public array $commands = [
+        ListCommand::class,
+        TestsCommand::class,
+        QueueCommand::class,
+        MigrationCreateCommand::class,
+        MigrationUpdateCommand::class
+    ];
+
     private string $basePath;
 
     private Container $container;
-    private ApplicationStrategy $strategy;
 
     private Router $router;
-
-    public array $commands = [
-        \PhpFramework\Console\Commands\ListCommand::class,
-        \PhpFramework\Console\Commands\TestsCommand::class,
-        \PhpFramework\Console\Commands\QueueCommand::class,
-        \PhpFramework\Console\Commands\Migration\MigrationCreateCommand::class,
-        \PhpFramework\Console\Commands\Migration\MigrationUpdateCommand::class
-    ] {
-        get {
-            return $this->commands;
-        }
-    }
 
     public function __construct()
     {
         $this->container = new Container([
-            DatabaseInterface::class => Database::class
+            DatabaseInterface::class => Database::class,
+            LoggerInterface::class => function () {
+                $logger = new LoggerManager();
+                if (PHP_SAPI === 'cli') {
+                    $logger->setLogger(new ConsoleLogger());
+                } else {
+                    $logger->setLogger(new FileLogger());
+                }
+
+                return $logger;
+            }
         ]);
-
-        $this->strategy = new ApplicationStrategy();
-        $this->strategy->setContainer($this->container);
-
-        $this->router = new Router;
-        $this->router->setStrategy($this->strategy);
     }
 
     /**
@@ -58,6 +66,12 @@ class Application implements ConsoleInterface
      */
     public function withRouting(callable $callback): self
     {
+        $strategy = new ApplicationStrategy();
+        $strategy->setContainer($this->container);
+
+        $this->router = new Router;
+        $this->router->setStrategy($strategy);
+
         $callback($this->router);
         return $this;
     }
@@ -92,6 +106,14 @@ class Application implements ConsoleInterface
     public function getBasePath(): string
     {
         return $this->basePath;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 
     /**

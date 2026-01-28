@@ -16,12 +16,13 @@ class QueueCommand extends Command
 
     public function __construct()
     {
+        parent::__construct();
         $this->queue = new Queue();
     }
 
     protected function handle(): void
     {
-        $this->info('This command will check the queues and run the tasks');
+        $this->logger->info('This command will check the queues and run the tasks');
 
         if (!$this->queue->hasQueueTable()) {
             $this->queue->createQueuesTable();
@@ -38,7 +39,7 @@ class QueueCommand extends Command
     {
         $task = $this->queue->pop();
         if ($task === null) {
-            $this->info('Nothing in a queues yet. Waiting for next iteration...');
+            $this->logger->info('Nothing in a queues yet. Waiting for next iteration...');
             return;
         }
 
@@ -53,12 +54,12 @@ class QueueCommand extends Command
     {
         try {
             $className = get_class($task);
-            $this->info("Starting task {$className}");
+            $this->logger->info("Starting task {$className}");
             $task->handle();
-            $this->info("Finishing task {$className}");
+            $this->logger->info("Finishing task {$className}");
         } catch (\Exception $e) {
-            $this->info("Error occurred when run task {$className}");
-            $this->error($e->getMessage());
+            $this->logger->info("Error occurred when run task {$className}");
+            $this->logger->error($e->getMessage());
             return false;
         }
 

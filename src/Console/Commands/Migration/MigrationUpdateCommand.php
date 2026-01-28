@@ -8,7 +8,7 @@ class MigrationUpdateCommand extends AbstractMigrationCommand
 {
     public string $name = 'migration:update';
 
-    public string $description = 'Create a migration class';
+    public string $description = 'Update a migration class';
 
     protected function handle(): void
     {
