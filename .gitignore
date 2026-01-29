@@ -1,6 +1,8 @@
 .idea
 /application
 /vendor
+/logs/*
+!logs/.gitkeep
 /views/*
 !views/.gitkeep
 .phpunit.result.cache
